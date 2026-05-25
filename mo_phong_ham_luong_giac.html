@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mô Phỏng Lượng Giác - Thầy Đoàn Thanh Minh Thọ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #0b0f19;
+        }
+        .neon-glow-sin {
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+        }
+        .neon-glow-cos {
+            text-shadow: 0 0 10px rgba(251, 146, 60, 0.5);
+        }
+        .neon-glow-tan {
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
+        }
+        .neon-glow-cot {
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header với Thương hiệu giáo viên -->
+    <header class="border-b border-gray-800 bg-gray-950/90 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20">
+                    <i data-lucide="graduation-cap" class="w-6 h-6 text-white animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent tracking-tight">
+                        Thầy Đoàn Thanh Minh Thọ
+                    </h1>
+                    <p class="text-xs text-emerald-400 font-semibold tracking-wider flex items-center gap-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        HỆ THỐNG MÔ PHỎNG TOÁN HỌC LƯỢNG GIÁC 11
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Bộ lọc Tab độc lập cho từng hàm số -->
+            <div class="flex flex-wrap gap-1 bg-gray-900 p-1.5 rounded-xl border border-gray-800/80">
+                <button onclick="switchTab('sin')" id="tab-btn-sin" class="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                    y = sin(x)
+                </button>
+                <button onclick="switchTab('cos')" id="tab-btn-cos" class="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 text-gray-400 hover:text-white">
+                    y = cos(x)
+                </button>
+                <button onclick="switchTab('tan')" id="tab-btn-tan" class="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 text-gray-400 hover:text-white">
+                    y = tan(x)
+                </button>
+                <button onclick="switchTab('cot')" id="tab-btn-cot" class="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 text-gray-400 hover:text-white">
+                    y = cot(x)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 flex flex-col gap-6">
+
+        <!-- PANEL ĐIỀU KHIỂN CHUNG (Đặt trên đầu để học sinh dễ thao tác góc xoay) -->
+        <div class="bg-gray-950/60 border border-gray-800 rounded-2xl p-5 shadow-xl grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+            
+            <!-- Điều chỉnh góc -->
+            <div class="md:col-span-5 flex flex-col gap-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                        <i data-lucide="compass" class="w-4 h-4 text-indigo-400"></i>
+                        Góc lượng giác α (Radian)
+                    </span>
+                    <span id="angle-display" class="text-sm font-mono font-bold text-white bg-gray-900 px-2.5 py-0.5 rounded border border-gray-800">1.00 rad</span>
+                </div>
+                <input type="range" id="angle-slider" min="-6.28" max="6.28" step="0.01" value="1.00" class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                <div class="flex justify-between text-[10px] text-gray-500 font-mono">
+                    <span>-2π (-360°)</span>
+                    <span>-π (-180°)</span>
+                    <span>0</span>
+                    <span>π (180°)</span>
+                    <span>2π (360°)</span>
+                </div>
+            </div>
+
+            <!-- Tự động chạy -->
+            <div class="md:col-span-4 flex flex-col gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                    <i data-lucide="play-circle" class="w-4 h-4 text-indigo-400"></i>
+                    Chuyển động tự động
+                </span>
+                <div class="flex gap-2">
+                    <button id="btn-play" onclick="togglePlay()" class="flex-1 py-2 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-bold text-xs flex items-center justify-center gap-2 transition-all text-white shadow-lg shadow-indigo-600/15">
+                        <i data-lucide="play" id="play-icon" class="w-4.5 h-4.5"></i>
+                        <span id="play-text">Chạy tự động</span>
+                    </button>
+                    <button onclick="resetAngle()" class="py-2 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 font-semibold text-xs flex items-center justify-center transition-all text-gray-300 border border-gray-700">
+                        <i data-lucide="rotate-ccw" class="w-4.5 h-4.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Điều chỉnh tốc độ và hiển thị độ -->
+            <div class="md:col-span-3 flex flex-col gap-2">
+                <div class="flex justify-between text-xs text-gray-400 font-bold uppercase tracking-wider">
+                    <span>Tốc độ quay</span>
+                    <span id="speed-display" class="font-mono text-indigo-400">1.0x</span>
+                </div>
+                <input type="range" id="speed-slider" min="0.1" max="2.5" step="0.1" value="1.0" class="w-full h-1.5 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-400">
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                    <span>Góc quy đổi:</span>
+                    <span id="angle-deg" class="font-mono font-bold text-gray-300">57.3°</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CONTAINER VÙNG CHỨA CÁC TAB CHI TIẾT       -->
+        <!-- ========================================== -->
+
+        <!-- TAB HÀM SIN -->
+        <div id="section-sin" class="tab-content flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Mô phỏng Side-by-Side -->
+                <div class="lg:col-span-8 bg-gray-950/50 border border-gray-800 rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-center z-10 border-b border-gray-900 pb-2">
+                        <span class="text-sm font-bold tracking-wide uppercase text-cyan-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                            Bảng đo sin(α) thực tế
+                        </span>
+                        <span class="text-xs font-mono bg-cyan-500/10 border border-cyan-500/20 rounded px-2 py-0.5 text-cyan-300">Trục Tung Oy</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐƯỜNG TRÒN LƯỢNG GIÁC</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-circle-sin" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐỒ THỊ HÀM SỐ y = sin(x)</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-graph-sin" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ thống số nhanh bên phải -->
+                <div class="lg:col-span-4 bg-gray-950/50 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xl gap-4">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-900 pb-3">
+                            <h3 class="text-md font-bold text-cyan-400 font-mono">y = sin(x)</h3>
+                            <p class="text-xs text-gray-400 mt-1">Giá trị đại số bằng hình chiếu điểm P lên trục thẳng đứng (Oy).</p>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Toạ độ điểm P:</span>
+                                <span id="coords-sin" class="font-mono text-gray-200">P(0.54, 0.84)</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Độ dài đại số hình chiếu:</span>
+                                <span id="length-sin" class="font-mono text-cyan-400 font-bold">+0.84</span>
+                            </div>
+                            <div class="p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20 text-center mt-3">
+                                <span class="block text-[11px] text-gray-400 font-semibold">KẾT QUẢ HIỆN THỜI</span>
+                                <span class="text-xl font-mono font-bold text-cyan-400" id="result-sin">sin(1.00) = 0.841</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-400 bg-gray-900/80 p-3 rounded-xl border border-gray-800 leading-relaxed">
+                        <span class="font-bold text-gray-300 block mb-1">💡 Hướng dẫn quan sát:</span>
+                        Khi điểm <span class="text-white font-semibold">P</span> di chuyển lên phía trên trục hoành, giá trị <span class="text-cyan-400 font-mono">sin</span> dương. Khi di chuyển xuống dưới, giá trị <span class="text-cyan-400 font-mono">sin</span> âm. Đồ thị dao động điều hòa tuần hoàn vô hạn giữa <span class="text-white font-mono">[-1; 1]</span>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối kiến thức lý thuyết Hàm Sin -->
+            <div class="bg-gray-950/40 border border-gray-800 rounded-2xl p-6">
+                <h3 class="text-md font-bold text-cyan-400 mb-4 flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                    Tổng hợp kiến thức: Hàm số lượng giác y = sin(x)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs mb-6">
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tập xác định D:</span>
+                        <span class="text-gray-200 font-mono">D = ℝ</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tập giá trị T:</span>
+                        <span class="text-cyan-400 font-mono font-bold">[-1; 1]</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tính chẵn lẻ:</span>
+                        <span class="text-gray-200">Hàm số lẻ (Đồ thị đối xứng qua gốc tọa độ O)</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Chu kỳ tuần hoàn:</span>
+                        <span class="text-gray-200 font-mono">T = 2π</span>
+                    </div>
+                </div>
+                
+                <span class="text-xs text-gray-400 font-bold block mb-2">BẢNG BIẾN THIÊN TRÊN ĐOẠN [-π; π]</span>
+                <div class="bg-gray-900/60 p-3 rounded-xl border border-gray-800 overflow-x-auto">
+                    <table class="w-full text-center font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-gray-800 text-gray-400">
+                                <th class="py-2 px-2 text-left">x</th>
+                                <th class="py-2 px-2">-π</th>
+                                <th class="py-2 px-2">-π/2</th>
+                                <th class="py-2 px-2">0</th>
+                                <th class="py-2 px-2">π/2</th>
+                                <th class="py-2 px-2">π</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-cyan-400">
+                                <td class="py-3 px-2 text-left text-gray-400 font-sans">y = sin(x)</td>
+                                <td class="py-3 px-2">0</td>
+                                <td class="py-3 px-2 text-rose-500 font-bold">↘ -1 (Cực tiểu)</td>
+                                <td class="py-3 px-2">↗ 0</td>
+                                <td class="py-3 px-2 text-emerald-400 font-bold">↗ 1 (Cực đại)</td>
+                                <td class="py-3 px-2">↘ 0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB HÀM COS -->
+        <div id="section-cos" class="tab-content hidden flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Mô phỏng Side-by-Side -->
+                <div class="lg:col-span-8 bg-gray-950/50 border border-gray-800 rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-center z-10 border-b border-gray-900 pb-2">
+                        <span class="text-sm font-bold tracking-wide uppercase text-orange-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-orange-400 animate-ping"></span>
+                            Bảng đo cos(α) thực tế
+                        </span>
+                        <span class="text-xs font-mono bg-orange-500/10 border border-orange-500/20 rounded px-2 py-0.5 text-orange-300">Trục Hoành Ox</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐƯỜNG TRÒN LƯỢNG GIÁC</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-circle-cos" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐỒ THỊ HÀM SỐ y = cos(x)</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-graph-cos" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ thống số nhanh bên phải -->
+                <div class="lg:col-span-4 bg-gray-950/50 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xl gap-4">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-900 pb-3">
+                            <h3 class="text-md font-bold text-orange-400 font-mono">y = cos(x)</h3>
+                            <p class="text-xs text-gray-400 mt-1">Giá trị đại số bằng hình chiếu điểm P lên trục nằm ngang (Ox).</p>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Toạ độ điểm P:</span>
+                                <span id="coords-cos" class="font-mono text-gray-200">P(0.54, 0.84)</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Độ dài đại số hình chiếu:</span>
+                                <span id="length-cos" class="font-mono text-orange-400 font-bold">+0.54</span>
+                            </div>
+                            <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 text-center mt-3">
+                                <span class="block text-[11px] text-gray-400 font-semibold">KẾT QUẢ HIỆN THỜI</span>
+                                <span class="text-xl font-mono font-bold text-orange-400" id="result-cos">cos(1.00) = 0.540</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-400 bg-gray-900/80 p-3 rounded-xl border border-gray-800 leading-relaxed">
+                        <span class="font-bold text-gray-300 block mb-1">💡 Hướng dẫn quan sát:</span>
+                        Khi điểm <span class="text-white font-semibold">P</span> nằm ở nửa đường tròn bên phải, giá trị <span class="text-orange-400 font-mono">cos</span> dương. Khi di chuyển sang bên trái, giá trị <span class="text-orange-400 font-mono">cos</span> âm. Hãy chú ý thấy đồ thị Cos bị dịch pha sang trái góc <span class="text-indigo-400 font-mono">π/2</span> so với đồ thị Sin.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối kiến thức lý thuyết Hàm Cos -->
+            <div class="bg-gray-950/40 border border-gray-800 rounded-2xl p-6">
+                <h3 class="text-md font-bold text-orange-400 mb-4 flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                    Tổng hợp kiến thức: Hàm số lượng giác y = cos(x)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs mb-6">
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tập xác định D:</span>
+                        <span class="text-gray-200 font-mono">D = ℝ</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tập giá trị T:</span>
+                        <span class="text-orange-400 font-mono font-bold">[-1; 1]</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tính chẵn lẻ:</span>
+                        <span class="text-gray-200">Hàm số chẵn (Đồ thị đối xứng qua trục tung Oy)</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Chu kỳ tuần hoàn:</span>
+                        <span class="text-gray-200 font-mono">T = 2π</span>
+                    </div>
+                </div>
+                
+                <span class="text-xs text-gray-400 font-bold block mb-2">BẢNG BIẾN THIÊN TRÊN ĐOẠN [-π; π]</span>
+                <div class="bg-gray-900/60 p-3 rounded-xl border border-gray-800 overflow-x-auto">
+                    <table class="w-full text-center font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-gray-800 text-gray-400">
+                                <th class="py-2 px-2 text-left">x</th>
+                                <th class="py-2 px-2">-π</th>
+                                <th class="py-2 px-2">-π/2</th>
+                                <th class="py-2 px-2">0</th>
+                                <th class="py-2 px-2">π/2</th>
+                                <th class="py-2 px-2">π</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-orange-400">
+                                <td class="py-3 px-2 text-left text-gray-400 font-sans">y = cos(x)</td>
+                                <td class="py-3 px-2">-1</td>
+                                <td class="py-3 px-2">↗ 0</td>
+                                <td class="py-3 px-2 text-emerald-400 font-bold">↗ 1 (Cực đại)</td>
+                                <td class="py-3 px-2">↘ 0</td>
+                                <td class="py-3 px-2 text-rose-500 font-bold">↘ -1 (Cực tiểu)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB HÀM TAN -->
+        <div id="section-tan" class="tab-content hidden flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Mô phỏng Side-by-Side -->
+                <div class="lg:col-span-8 bg-gray-950/50 border border-gray-800 rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-center z-10 border-b border-gray-900 pb-2">
+                        <span class="text-sm font-bold tracking-wide uppercase text-emerald-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                            Bảng đo tan(α) thực tế
+                        </span>
+                        <span class="text-xs font-mono bg-emerald-500/10 border border-emerald-500/20 rounded px-2 py-0.5 text-emerald-300">Tiếp tuyến x=1</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐƯỜNG TRÒN LƯỢNG GIÁC</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-circle-tan" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐỒ THỊ HÀM SỐ y = tan(x)</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-graph-tan" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ thống số nhanh bên phải -->
+                <div class="lg:col-span-4 bg-gray-950/50 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xl gap-4">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-900 pb-3">
+                            <h3 class="text-md font-bold text-emerald-400 font-mono">y = tan(x)</h3>
+                            <p class="text-xs text-gray-400 mt-1">Giá trị biểu diễn bằng giao điểm của tia OP với tiếp tuyến x = 1 của đường tròn.</p>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Toạ độ điểm P:</span>
+                                <span id="coords-tan" class="font-mono text-gray-200">P(0.54, 0.84)</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Chiều cao trên trục tiếp tuyến:</span>
+                                <span id="length-tan" class="font-mono text-emerald-400 font-bold">+1.55</span>
+                            </div>
+                            <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-center mt-3">
+                                <span class="block text-[11px] text-gray-400 font-semibold">KẾT QUẢ HIỆN THỜI</span>
+                                <span class="text-xl font-mono font-bold text-emerald-400" id="result-tan">tan(1.00) = 1.557</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-400 bg-gray-900/80 p-3 rounded-xl border border-gray-800 leading-relaxed">
+                        <span class="font-bold text-gray-300 block mb-1">💡 Hướng dẫn quan sát:</span>
+                        Khi góc quay tiến dần tới <span class="text-rose-400 font-mono">π/2 (90°)</span>, trục bán kính song song với tiếp tuyến, làm cho giá trị <span class="text-emerald-400 font-mono">tan</span> vọt lên vô cực (<span class="text-emerald-400 font-bold">+∞</span>). Đây là lý do đồ thị bị đứt quãng tại các đường tiệm cận nét đứt đỏ.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối kiến thức lý thuyết Hàm Tan -->
+            <div class="bg-gray-950/40 border border-gray-800 rounded-2xl p-6">
+                <h3 class="text-md font-bold text-emerald-400 mb-4 flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                    Tổng hợp kiến thức: Hàm số lượng giác y = tan(x)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs mb-6">
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tập xác định D:</span>
+                        <span class="text-gray-200 font-mono">D = ℝ \ {π/2 + kπ, k ∈ ℤ}</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tập giá trị T:</span>
+                        <span class="text-emerald-400 font-mono font-bold">ℝ (Vô hạn)</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tính chẵn lẻ:</span>
+                        <span class="text-gray-200">Hàm số lẻ (Đồ thị đối xứng qua gốc tọa độ O)</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Chu kỳ tuần hoàn:</span>
+                        <span class="text-gray-200 font-mono">T = π</span>
+                    </div>
+                </div>
+                
+                <span class="text-xs text-gray-400 font-bold block mb-2">BIẾN THIÊN TRÊN MỘT CHU KỲ (-π/2; π/2)</span>
+                <div class="bg-gray-900/60 p-3 rounded-xl border border-gray-800 overflow-x-auto">
+                    <table class="w-full text-center font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-gray-800 text-gray-400">
+                                <th class="py-2 px-2 text-left">x</th>
+                                <th class="py-2 px-2">-π/2 (tiệm cận)</th>
+                                <th class="py-2 px-2">-π/4</th>
+                                <th class="py-2 px-2">0</th>
+                                <th class="py-2 px-2">π/4</th>
+                                <th class="py-2 px-2">π/2 (tiệm cận)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-emerald-400">
+                                <td class="py-3 px-2 text-left text-gray-400 font-sans">y = tan(x)</td>
+                                <td class="py-3 px-2 text-rose-500 font-bold">-∞</td>
+                                <td class="py-3 px-2">↗ -1</td>
+                                <td class="py-3 px-2">↗ 0</td>
+                                <td class="py-3 px-2">↗ 1</td>
+                                <td class="py-3 px-2 text-emerald-400 font-bold">↗ +∞</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB HÀM COT -->
+        <div id="section-cot" class="tab-content hidden flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Mô phỏng Side-by-Side -->
+                <div class="lg:col-span-8 bg-gray-950/50 border border-gray-800 rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-center z-10 border-b border-gray-900 pb-2">
+                        <span class="text-sm font-bold tracking-wide uppercase text-amber-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+                            Bảng đo cot(α) thực tế
+                        </span>
+                        <span class="text-xs font-mono bg-amber-500/10 border border-amber-500/20 rounded px-2 py-0.5 text-amber-300">Tiếp tuyến y=1</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐƯỜNG TRÒN LƯỢNG GIÁC</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-circle-cot" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐỒ THỊ HÀM SỐ y = cot(x)</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-graph-cot" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ thống số nhanh bên phải -->
+                <div class="lg:col-span-4 bg-gray-950/50 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xl gap-4">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-900 pb-3">
+                            <h3 class="text-md font-bold text-amber-400 font-mono">y = cot(x)</h3>
+                            <p class="text-xs text-gray-400 mt-1">Giá trị biểu diễn bằng giao điểm của tia OP với đường nằm ngang y = 1 của đường tròn.</p>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Toạ độ điểm P:</span>
+                                <span id="coords-cot" class="font-mono text-gray-200">P(0.54, 0.84)</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Độ dài đại số tiếp tuyến ngang:</span>
+                                <span id="length-cot" class="font-mono text-amber-400 font-bold">+0.64</span>
+                            </div>
+                            <div class="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-center mt-3">
+                                <span class="block text-[11px] text-gray-400 font-semibold">KẾT QUẢ HIỆN THỜI</span>
+                                <span class="text-xl font-mono font-bold text-amber-400" id="result-cot">cot(1.00) = 0.642</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-400 bg-gray-900/80 p-3 rounded-xl border border-gray-800 leading-relaxed">
+                        <span class="font-bold text-gray-300 block mb-1">💡 Hướng dẫn quan sát:</span>
+                        Khi góc quay tiến gần sát trục hoành Ox <span class="text-rose-400 font-mono">(0, π, 2π)</span>, tia OP hầu như không thể cắt tiếp tuyến ngang y=1. Giá trị <span class="text-amber-400 font-mono">cot</span> khi ấy tiến về <span class="text-amber-400 font-bold">±∞</span>, tạo ra các điểm đứt gãy đồ thị đặc trưng.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối kiến thức lý thuyết Hàm Cot -->
+            <div class="bg-gray-950/40 border border-gray-800 rounded-2xl p-6">
+                <h3 class="text-md font-bold text-amber-400 mb-4 flex items-center gap-2">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                    Tổng hợp kiến thức: Hàm số lượng giác y = cot(x)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-xs mb-6">
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tập xác định D:</span>
+                        <span class="text-gray-200 font-mono">D = ℝ \ {kπ, k ∈ ℤ}</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tập giá trị T:</span>
+                        <span class="text-amber-400 font-mono font-bold">ℝ (Vô hạn)</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Tính chẵn lẻ:</span>
+                        <span class="text-gray-200">Hàm số lẻ (Đồ thị đối xứng qua gốc tọa độ O)</span>
+                    </div>
+                    <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800">
+                        <span class="text-gray-400 font-bold block mb-1">Chu kỳ tuần hoàn:</span>
+                        <span class="text-gray-200 font-mono">T = π</span>
+                    </div>
+                </div>
+                
+                <span class="text-xs text-gray-400 font-bold block mb-2">BIẾN THIÊN TRÊN MỘT CHU KỲ (0; π)</span>
+                <div class="bg-gray-900/60 p-3 rounded-xl border border-gray-800 overflow-x-auto">
+                    <table class="w-full text-center font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-gray-800 text-gray-400">
+                                <th class="py-2 px-2 text-left">x</th>
+                                <th class="py-2 px-2">0 (tiệm cận)</th>
+                                <th class="py-2 px-2">π/4</th>
+                                <th class="py-2 px-2">π/2</th>
+                                <th class="py-2 px-2">3π/4</th>
+                                <th class="py-2 px-2">π (tiệm cận)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-amber-400">
+                                <td class="py-3 px-2 text-left text-gray-400 font-sans">y = cot(x)</td>
+                                <td class="py-3 px-2 text-emerald-400 font-bold">+∞</td>
+                                <td class="py-3 px-2">↘ 1</td>
+                                <td class="py-3 px-2">↘ 0</td>
+                                <td class="py-3 px-2">↘ -1</td>
+                                <td class="py-3 px-2 text-rose-500 font-bold">↘ -∞</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-gray-900 bg-gray-950 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+            <div>
+                &copy; 2026 Bản quyền thuộc về <span class="text-indigo-400 font-bold">Thầy Đoàn Thanh Minh Thọ</span>. Bảo lưu mọi quyền.
+            </div>
+            <div class="flex gap-4">
+                <span class="hover:text-gray-300 transition-colors">Công nghệ EdTech 11</span>
+                <span>&bull;</span>
+                <span class="hover:text-gray-300 transition-colors">HTML5 Canvas 60FPS</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Logic Core -->
+    <script>
+        // Init Lucide icon elements
+        lucide.createIcons();
+
+        // High-level App States
+        let currentTab = 'sin'; // 'sin', 'cos', 'tan', 'cot'
+        let currentAngle = 1.0; // Radian
+        let isPlaying = false;
+        let animationSpeed = 1.0;
+        let lastTime = 0;
+
+        // Config color system
+        const colors = {
+            sin: { main: '#22d3ee', light: 'rgba(34, 211, 238, 0.15)', glow: 'rgba(34, 211, 238, 0.45)', shadow: '#0891b2' },
+            cos: { main: '#fb923c', light: 'rgba(251, 146, 60, 0.15)', glow: 'rgba(251, 146, 60, 0.45)', shadow: '#ea580c' },
+            tan: { main: '#34d399', light: 'rgba(52, 211, 153, 0.15)', glow: 'rgba(52, 211, 153, 0.45)', shadow: '#059669' },
+            cot: { main: '#fbbf24', light: 'rgba(251, 191, 36, 0.15)', glow: 'rgba(251, 191, 36, 0.45)', shadow: '#d97706' }
+        };
+
+        // Cache canvas & contexts
+        const canvases = {
+            sin: {
+                circle: document.getElementById('canvas-circle-sin'),
+                graph: document.getElementById('canvas-graph-sin'),
+                ctxCircle: document.getElementById('canvas-circle-sin').getContext('2d'),
+                ctxGraph: document.getElementById('canvas-graph-sin').getContext('2d')
+            },
+            cos: {
+                circle: document.getElementById('canvas-circle-cos'),
+                graph: document.getElementById('canvas-graph-cos'),
+                ctxCircle: document.getElementById('canvas-circle-cos').getContext('2d'),
+                ctxGraph: document.getElementById('canvas-graph-cos').getContext('2d')
+            },
+            tan: {
+                circle: document.getElementById('canvas-circle-tan'),
+                graph: document.getElementById('canvas-graph-tan'),
+                ctxCircle: document.getElementById('canvas-circle-tan').getContext('2d'),
+                ctxGraph: document.getElementById('canvas-graph-tan').getContext('2d')
+            },
+            cot: {
+                circle: document.getElementById('canvas-circle-cot'),
+                graph: document.getElementById('canvas-graph-cot'),
+                ctxCircle: document.getElementById('canvas-circle-cot').getContext('2d'),
+                ctxGraph: document.getElementById('canvas-graph-cot').getContext('2d')
+            }
+        };
+
+        // Helper to scale canvases for High DPI screens
+        function scaleCanvas(canvas, ctx) {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.resetTransform();
+            ctx.scale(dpr, dpr);
+            return { w: rect.width, h: rect.height };
+        }
+
+        let sizes = {};
+
+        function resizeAll() {
+            // Only scale active or all tabs
+            const tabs = ['sin', 'cos', 'tan', 'cot'];
+            tabs.forEach(tab => {
+                sizes[tab] = {
+                    circle: scaleCanvas(canvases[tab].circle, canvases[tab].ctxCircle),
+                    graph: scaleCanvas(canvases[tab].graph, canvases[tab].ctxGraph)
+                };
+            });
+        }
+
+        // Setup control event listeners
+        const angleSlider = document.getElementById('angle-slider');
+        const angleDisplay = document.getElementById('angle-display');
+        const angleDeg = document.getElementById('angle-deg');
+        const speedSlider = document.getElementById('speed-slider');
+        const speedDisplay = document.getElementById('speed-display');
+
+        angleSlider.addEventListener('input', (e) => {
+            currentAngle = parseFloat(e.target.value);
+            updateInfoPanels();
+        });
+
+        speedSlider.addEventListener('input', (e) => {
+            animationSpeed = parseFloat(e.target.value);
+            speedDisplay.innerText = `${animationSpeed.toFixed(1)}x`;
+        });
+
+        // Initialize viewports on load
+        window.addEventListener('load', () => {
+            resizeAll();
+            updateInfoPanels();
+            requestAnimationFrame(mainRenderLoop);
+            requestAnimationFrame(animationPhysicsLoop);
+        });
+
+        window.addEventListener('resize', () => {
+            resizeAll();
+        });
+
+        // Loop 1: Render graphics at 60fps
+        function mainRenderLoop() {
+            const active = currentTab;
+            const ctxC = canvases[active].ctxCircle;
+            const ctxG = canvases[active].ctxGraph;
+            const sizeC = sizes[active].circle;
+            const sizeG = sizes[active].graph;
+
+            if (ctxC && ctxG && sizeC && sizeG) {
+                ctxC.clearRect(0, 0, sizeC.w, sizeC.h);
+                ctxG.clearRect(0, 0, sizeG.w, sizeG.h);
+
+                drawTrigCircle(active, ctxC, sizeC.w, sizeC.h);
+                drawFunctionGraph(active, ctxG, sizeG.w, sizeG.h);
+            }
+
+            requestAnimationFrame(mainRenderLoop);
+        }
+
+        // Loop 2: Phyics/Auto-run Angle computations
+        function animationPhysicsLoop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const delta = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            if (isPlaying) {
+                currentAngle += delta * 0.45 * animationSpeed;
+                if (currentAngle > Math.PI * 2) {
+                    currentAngle = -Math.PI * 2;
+                }
+                angleSlider.value = currentAngle.toFixed(2);
+                updateInfoPanels();
+            }
+
+            requestAnimationFrame(animationPhysicsLoop);
+        }
+
+        // Update Text indicators on GUI
+        function updateInfoPanels() {
+            angleDisplay.innerText = `${currentAngle.toFixed(2)} rad`;
+            
+            let degrees = (currentAngle * 180 / Math.PI) % 360;
+            if (degrees < 0) degrees += 360;
+            angleDeg.innerText = `${degrees.toFixed(1)}°`;
+
+            // Common trig ratios for point P
+            const cosVal = Math.cos(currentAngle);
+            const sinVal = Math.sin(currentAngle);
+
+            // Update DOM items for SIN Tab
+            document.getElementById('coords-sin').innerText = `P(${cosVal.toFixed(2)}, ${sinVal.toFixed(2)})`;
+            document.getElementById('length-sin').innerText = (sinVal >= 0 ? '+' : '') + sinVal.toFixed(2);
+            document.getElementById('result-sin').innerText = `sin(${currentAngle.toFixed(2)}) = ${sinVal.toFixed(3)}`;
+
+            // Update DOM items for COS Tab
+            document.getElementById('coords-cos').innerText = `P(${cosVal.toFixed(2)}, ${sinVal.toFixed(2)})`;
+            document.getElementById('length-cos').innerText = (cosVal >= 0 ? '+' : '') + cosVal.toFixed(2);
+            document.getElementById('result-cos').innerText = `cos(${currentAngle.toFixed(2)}) = ${cosVal.toFixed(3)}`;
+
+            // Update DOM items for TAN Tab
+            document.getElementById('coords-tan').innerText = `P(${cosVal.toFixed(2)}, ${sinVal.toFixed(2)})`;
+            if (Math.abs(cosVal) < 0.001) {
+                document.getElementById('length-tan').innerText = 'Không xác định (∞)';
+                document.getElementById('result-tan').innerText = `tan(${currentAngle.toFixed(2)}) = ∅`;
+            } else {
+                const tanVal = sinVal / cosVal;
+                document.getElementById('length-tan').innerText = (tanVal >= 0 ? '+' : '') + tanVal.toFixed(2);
+                document.getElementById('result-tan').innerText = `tan(${currentAngle.toFixed(2)}) = ${tanVal.toFixed(3)}`;
+            }
+
+            // Update DOM items for COT Tab
+            document.getElementById('coords-cot').innerText = `P(${cosVal.toFixed(2)}, ${sinVal.toFixed(2)})`;
+            if (Math.abs(sinVal) < 0.001) {
+                document.getElementById('length-cot').innerText = 'Không xác định (∞)';
+                document.getElementById('result-cot').innerText = `cot(${currentAngle.toFixed(2)}) = ∅`;
+            } else {
+                const cotVal = cosVal / sinVal;
+                document.getElementById('length-cot').innerText = (cotVal >= 0 ? '+' : '') + cotVal.toFixed(2);
+                document.getElementById('result-cot').innerText = `cot(${currentAngle.toFixed(2)}) = ${cotVal.toFixed(3)}`;
+            }
+        }
+
+        // Toggle Tab trigger
+        function switchTab(tabId) {
+            currentTab = tabId;
+
+            // Update Tab bar styling
+            const tabs = ['sin', 'cos', 'tan', 'cot'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const section = document.getElementById(`section-${t}`);
+                if (t === tabId) {
+                    btn.className = `flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 bg-${getTabColorName(t)}-500/20 text-${getTabColorName(t)}-400 border border-${getTabColorName(t)}-500/30`;
+                    section.classList.remove('hidden');
+                    section.classList.add('flex');
+                } else {
+                    btn.className = "flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 text-gray-400 hover:text-white";
+                    section.classList.add('hidden');
+                    section.classList.remove('flex');
+                }
+            });
+
+            // Rescale coordinates of canvases specifically
+            setTimeout(resizeAll, 30);
+            updateInfoPanels();
+        }
+
+        function getTabColorName(tab) {
+            if (tab === 'sin') return 'cyan';
+            if (tab === 'cos') return 'orange';
+            if (tab === 'tan') return 'emerald';
+            return 'amber';
+        }
+
+        // Auto play engines
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const playIcon = document.getElementById('play-icon');
+            const playText = document.getElementById('play-text');
+            const playBtn = document.getElementById('btn-play');
+
+            if (isPlaying) {
+                playIcon.setAttribute('data-lucide', 'pause');
+                playText.innerText = "Tạm dừng xoay";
+                playBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                playBtn.classList.add('bg-rose-600', 'hover:bg-rose-700');
+            } else {
+                playIcon.setAttribute('data-lucide', 'play');
+                playText.innerText = "Chạy tự động";
+                playBtn.classList.remove('bg-rose-600', 'hover:bg-rose-700');
+                playBtn.indigoClass = "bg-indigo-600 hover:bg-indigo-700";
+                playBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            }
+            lucide.createIcons();
+        }
+
+        function resetAngle() {
+            currentAngle = 1.0;
+            angleSlider.value = "1.00";
+            updateInfoPanels();
+        }
+
+
+        // ==========================================
+        //  VẼ ĐƯỜNG TRÒN LƯỢNG GIÁC CHO TỪNG TAB
+        // ==========================================
+        function drawTrigCircle(tab, ctx, w, h) {
+            const cx = w / 2;
+            const cy = h / 2;
+            const r = Math.min(w, h) * 0.35; // Bán kính chuẩn
+
+            // Lưới nền mờ ảo sang trọng
+            ctx.strokeStyle = '#111827';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= w; i += 20) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke();
+            }
+            for (let i = 0; i <= h; i += 20) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
+            }
+
+            // Vòng tròn lượng giác đơn vị
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Trục tọa độ Ox và Oy chính
+            ctx.beginPath();
+            ctx.moveTo(10, cy); ctx.lineTo(w - 10, cy);
+            ctx.moveTo(cx, 10); ctx.lineTo(cx, h - 10);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Nhãn dán các điểm mốc
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 9px monospace';
+            ctx.fillText('x (Cos)', w - 45, cy + 15);
+            ctx.fillText('y (Sin)', cx + 10, 20);
+            ctx.fillText('1', cx + r + 5, cy + 12);
+            ctx.fillText('-1', cx - r - 15, cy + 12);
+            ctx.fillText('1', cx - 12, cy - r - 5);
+            ctx.fillText('-1', cx - 18, cy + r + 12);
+
+            // Vẽ trục đặc thù cho TAN / COT
+            if (tab === 'tan') {
+                ctx.beginPath();
+                ctx.moveTo(cx + r, 10);
+                ctx.lineTo(cx + r, h - 10);
+                ctx.strokeStyle = 'rgba(52, 211, 153, 0.25)';
+                ctx.lineWidth = 1.2;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#34d399';
+                ctx.fillText('Trục Tan', cx + r + 8, 25);
+            } else if (tab === 'cot') {
+                ctx.beginPath();
+                ctx.moveTo(10, cy - r);
+                ctx.lineTo(w - 10, cy - r);
+                ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
+                ctx.lineWidth = 1.2;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#fbbf24';
+                ctx.fillText('Trục Cot', 15, cy - r - 8);
+            }
+
+            // Tọa độ điểm chuyển động P
+            const px = cx + r * Math.cos(currentAngle);
+            const py = cy - r * Math.sin(currentAngle);
+
+            // Tô màu góc quạt lượng giác α
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, 22, 0, -currentAngle, currentAngle < 0);
+            ctx.lineTo(cx, cy);
+            ctx.fillStyle = colors[tab].light;
+            ctx.fill();
+
+            // Vẽ bán kính OP
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(px, py);
+            ctx.strokeStyle = '#f8fafc';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Vẽ đường dóng đại số đặc trưng cho từng hàm
+            ctx.strokeStyle = colors[tab].main;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+
+            if (tab === 'sin') {
+                // Dóng sang Oy
+                ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(cx, py); ctx.stroke();
+                ctx.setLineDash([]);
+                // Highlight phần dóng trên Oy
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, py);
+                ctx.strokeStyle = colors.sin.main; ctx.lineWidth = 3.5; ctx.stroke();
+            } 
+            else if (tab === 'cos') {
+                // Dóng xuống Ox
+                ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, cy); ctx.stroke();
+                ctx.setLineDash([]);
+                // Highlight phần dóng trên Ox
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, cy);
+                ctx.strokeStyle = colors.cos.main; ctx.lineWidth = 3.5; ctx.stroke();
+            }
+            else if (tab === 'tan') {
+                const cosA = Math.cos(currentAngle);
+                const sinA = Math.sin(currentAngle);
+                if (Math.abs(cosA) > 0.001) {
+                    const tanVal = sinA / cosA;
+                    const intersectY = cy - r * tanVal;
+                    
+                    // Vẽ tia kéo dài từ tâm qua P đến trục tan
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(cx + r, intersectY);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Đoạn thẳng giá trị trên trục Tan
+                    ctx.setLineDash([]);
+                    ctx.beginPath();
+                    ctx.moveTo(cx + r, cy);
+                    ctx.lineTo(cx + r, intersectY);
+                    ctx.strokeStyle = colors.tan.main;
+                    ctx.lineWidth = 3.5;
+                    ctx.stroke();
+
+                    // Điểm nút tiếp tuyến
+                    ctx.beginPath();
+                    ctx.arc(cx + r, intersectY, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = colors.tan.main;
+                    ctx.fill();
+                }
+            }
+            else if (tab === 'cot') {
+                const cosA = Math.cos(currentAngle);
+                const sinA = Math.sin(currentAngle);
+                if (Math.abs(sinA) > 0.001) {
+                    const cotVal = cosA / sinA;
+                    const intersectX = cx + r * cotVal;
+
+                    // Vẽ tia kéo dài từ tâm qua P đến trục cot
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(intersectX, cy - r);
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Đoạn thẳng giá trị trên trục Cot
+                    ctx.setLineDash([]);
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy - r);
+                    ctx.lineTo(intersectX, cy - r);
+                    ctx.strokeStyle = colors.cot.main;
+                    ctx.lineWidth = 3.5;
+                    ctx.stroke();
+
+                    // Điểm nút tiếp tuyến ngang
+                    ctx.beginPath();
+                    ctx.arc(intersectX, cy - r, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = colors.cot.main;
+                    ctx.fill();
+                }
+            }
+
+            ctx.setLineDash([]);
+
+            // Điểm chuyển động P trên đường tròn
+            ctx.beginPath();
+            ctx.arc(px, py, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = colors[tab].main;
+            ctx.fill();
+            ctx.shadowBlur = 0; // Tắt shadow cho các nét vẽ sau
+        }
+
+        // ==========================================
+        //  VẼ ĐỒ THỊ LƯỢNG GIÁC CHO TỪNG TAB
+        // ==========================================
+        function drawFunctionGraph(tab, ctx, w, h) {
+            const cx = w / 2;
+            const cy = h / 2;
+
+            const scaleX = w / (4 * Math.PI); // Trục hoành khớp [-2pi, 2pi]
+            const scaleY = h * 0.3; // Biên độ vẽ 30% chiều cao canvas
+
+            // Lưới nền mờ ảo sang trọng
+            ctx.strokeStyle = '#111827';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= w; i += 20) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke();
+            }
+            for (let i = 0; i <= h; i += 20) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
+            }
+
+            // Trục Oxy
+            ctx.beginPath();
+            ctx.moveTo(10, cy); ctx.lineTo(w - 10, cy);
+            ctx.moveTo(cx, 10); ctx.lineTo(cx, h - 10);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Khắc tọa độ trên trục hoành
+            const labelXPoints = [
+                { val: -Math.PI * 2, label: '-2π' },
+                { val: -Math.PI, label: '-π' },
+                { val: -Math.PI / 2, label: '-π/2' },
+                { val: 0, label: '0' },
+                { val: Math.PI / 2, label: 'π/2' },
+                { val: Math.PI, label: 'π' },
+                { val: Math.PI * 2, label: '2π' }
+            ];
+
+            ctx.fillStyle = '#475569';
+            ctx.font = 'bold 9px monospace';
+            ctx.textAlign = 'center';
+            labelXPoints.forEach(pt => {
+                const drawX = cx + pt.val * scaleX;
+                if (pt.val !== 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(drawX, cy - 3);
+                    ctx.lineTo(drawX, cy + 3);
+                    ctx.strokeStyle = '#334155';
+                    ctx.stroke();
+                }
+                ctx.fillText(pt.label, drawX, cy + 14);
+            });
+
+            // Tiệm cận cho Tan / Cot
+            if (tab === 'tan') {
+                const asymptotes = [-1.5 * Math.PI, -0.5 * Math.PI, 0.5 * Math.PI, 1.5 * Math.PI];
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.25)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                asymptotes.forEach(asymp => {
+                    const drawX = cx + asymp * scaleX;
+                    ctx.beginPath(); ctx.moveTo(drawX, 10); ctx.lineTo(drawX, h - 10); ctx.stroke();
+                });
+                ctx.setLineDash([]);
+            } else if (tab === 'cot') {
+                const asymptotes = [-2*Math.PI, -Math.PI, Math.PI, 2*Math.PI];
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.25)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                asymptotes.forEach(asymp => {
+                    const drawX = cx + asymp * scaleX;
+                    ctx.beginPath(); ctx.moveTo(drawX, 10); ctx.lineTo(drawX, h - 10); ctx.stroke();
+                });
+                ctx.setLineDash([]);
+            }
+
+            // Vẽ đồ thị hàm chính
+            ctx.beginPath();
+            let firstPoint = true;
+            const startX = -2 * Math.PI;
+            const endX = 2 * Math.PI;
+            const step = 0.05;
+
+            ctx.strokeStyle = colors[tab].main;
+            ctx.lineWidth = 2.5;
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = colors[tab].glow;
+
+            for (let x = startX; x <= endX; x += step) {
+                let y = 0;
+                let isValid = true;
+
+                if (tab === 'sin') {
+                    y = Math.sin(x);
+                } else if (tab === 'cos') {
+                    y = Math.cos(x);
+                } else if (tab === 'tan') {
+                    y = Math.tan(x);
+                    if (Math.abs(Math.cos(x)) < 0.08) isValid = false; // Ngắt vẽ khi tiệm cận
+                } else if (tab === 'cot') {
+                    y = 1 / Math.tan(x);
+                    if (Math.abs(Math.sin(x)) < 0.08) isValid = false; // Ngắt vẽ khi tiệm cận
+                }
+
+                const drawX = cx + x * scaleX;
+                const drawY = cy - y * scaleY;
+
+                if (isValid && drawY >= 5 && drawY <= h - 5) {
+                    if (firstPoint) {
+                        ctx.moveTo(drawX, drawY);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(drawX, drawY);
+                    }
+                } else {
+                    firstPoint = true; // Tạo vết đứt quãng tiệm cận
+                }
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0; // Reset glow
+
+            // Xác định điểm hiện hành trên Đồ thị
+            let activeYValue = 0;
+            let isDefined = true;
+
+            if (tab === 'sin') {
+                activeYValue = Math.sin(currentAngle);
+            } else if (tab === 'cos') {
+                activeYValue = Math.cos(currentAngle);
+            } else if (tab === 'tan') {
+                activeYValue = Math.sin(currentAngle) / Math.cos(currentAngle);
+                if (Math.abs(Math.cos(currentAngle)) < 0.05) isDefined = false;
+            } else if (tab === 'cot') {
+                activeYValue = Math.cos(currentAngle) / Math.sin(currentAngle);
+                if (Math.abs(Math.sin(currentAngle)) < 0.05) isDefined = false;
+            }
+
+            const activeX = cx + currentAngle * scaleX;
+            const activeY = cy - activeYValue * scaleY;
+
+            if (isDefined && activeY >= 0 && activeY <= h) {
+                // Đường dóng ngang sang màn hình tròn lượng giác bên trái
+                ctx.beginPath();
+                ctx.moveTo(activeX, activeY);
+                ctx.lineTo(0, activeY);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Đường dóng vuông góc xuống trục hoành Ox của đồ thị
+                ctx.beginPath();
+                ctx.moveTo(activeX, activeY);
+                ctx.lineTo(activeX, cy);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Điểm sáng chỉ định hiện thời trên đồ thị
+                ctx.beginPath();
+                ctx.arc(activeX, activeY, 6.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = colors[tab].main;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+    </script>
+</body>
+</html>
