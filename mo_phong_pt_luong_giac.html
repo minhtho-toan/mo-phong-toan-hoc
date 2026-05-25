@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mô Phỏng Phương Trình Lượng Giác - Thầy Đoàn Thanh Minh Thọ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Lexend', sans-serif;
+            background-color: #0b0f19;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header Thương hiệu Giáo viên -->
+    <header class="border-b border-gray-800 bg-gray-950/90 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20">
+                    <i data-lucide="calculator" class="w-6 h-6 text-white animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent tracking-tight">
+                        Thầy Đoàn Thanh Minh Thọ
+                    </h1>
+                    <p class="text-xs text-cyan-400 font-semibold tracking-wider flex items-center gap-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        HỆ THỐNG MÔ PHỎNG PHƯƠNG TRÌNH LƯỢNG GIÁC CƠ BẢN (TOÁN 11)
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Bộ lọc Tab cho từng Phương trình -->
+            <div class="flex flex-wrap gap-1 bg-gray-900 p-1.5 rounded-xl border border-gray-800/80">
+                <button onclick="switchTab('sin')" id="tab-btn-sin" class="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                    sin x = a
+                </button>
+                <button onclick="switchTab('cos')" id="tab-btn-cos" class="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 text-gray-400 hover:text-white">
+                    cos x = a
+                </button>
+                <button onclick="switchTab('tan')" id="tab-btn-tan" class="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 text-gray-400 hover:text-white">
+                    tan x = a
+                </button>
+                <button onclick="switchTab('cot')" id="tab-btn-cot" class="flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 text-gray-400 hover:text-white">
+                    cot x = a
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 flex flex-col gap-6">
+
+        <!-- PANEL ĐIỀU KHIỂN THAM SỐ "a" TOÀN CỤC -->
+        <div class="bg-gray-950/60 border border-gray-800 rounded-2xl p-5 shadow-xl grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+            
+            <!-- Thay đổi giá trị a -->
+            <div class="md:col-span-5 flex flex-col gap-2">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-indigo-400"></i>
+                        Tham số a (Giá trị phương trình)
+                    </span>
+                    <span id="param-display" class="text-sm font-mono font-bold text-white bg-gray-900 px-2.5 py-0.5 rounded border border-gray-800">a = 0.50</span>
+                </div>
+                <input type="range" id="param-slider" min="-2.00" max="2.00" step="0.01" value="0.50" class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                <div class="flex justify-between text-[10px] font-bold font-mono">
+                    <span class="text-gray-500">-2.0</span>
+                    <span class="text-rose-400">-1.0 (Biên giới hạn)</span>
+                    <span class="text-gray-500">0</span>
+                    <span class="text-rose-400">1.0 (Biên giới hạn)</span>
+                    <span class="text-gray-500">2.0</span>
+                </div>
+            </div>
+
+            <!-- Nút Tự động quét tham số a -->
+            <div class="md:col-span-4 flex flex-col gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                    <i data-lucide="play-circle" class="w-4 h-4 text-indigo-400"></i>
+                    Chế độ quét tham số tự động
+                </span>
+                <div class="flex gap-2">
+                    <button id="btn-play" onclick="togglePlay()" class="flex-1 py-2 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-bold text-xs flex items-center justify-center gap-2 transition-all text-white shadow-lg shadow-indigo-600/15">
+                        <i data-lucide="play" id="play-icon" class="w-4.5 h-4.5"></i>
+                        <span id="play-text">Tự động quét a</span>
+                    </button>
+                    <button onclick="resetParam()" class="py-2 px-3 rounded-xl bg-gray-800 hover:bg-gray-700 font-semibold text-xs flex items-center justify-center transition-all text-gray-300 border border-gray-700">
+                        <i data-lucide="rotate-ccw" class="w-4.5 h-4.5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Trạng thái nghiệm thực tế -->
+            <div class="md:col-span-3 flex flex-col gap-1">
+                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Trạng thái nghiệm</span>
+                <div id="solution-badge" class="px-3 py-2 rounded-xl text-xs font-bold text-center border transition-all duration-300 bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                    Phương trình có nghiệm kép
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CONTAINER VÙNG CHỨA CÁC TAB CHI TIẾT       -->
+        <!-- ========================================== -->
+
+        <!-- TAB PHƯƠNG TRÌNH SIN X = A -->
+        <div id="section-sin" class="tab-content flex flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Mô phỏng trực quan -->
+                <div class="lg:col-span-8 bg-gray-950/50 border border-gray-800 rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-center z-10 border-b border-gray-900 pb-2">
+                        <span class="text-sm font-bold tracking-wide uppercase text-cyan-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                            Giao điểm đường thẳng y = a & Đồ thị Sin
+                        </span>
+                        <span class="text-xs font-mono bg-cyan-500/10 border border-cyan-500/20 rounded px-2 py-0.5 text-cyan-300">Nghiệm là hoành độ các giao điểm</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐƯỜNG TRÒN LƯỢNG GIÁC (GIAO ĐIỂM y = a)</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-circle-sin" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐỒ THỊ HÀM SỐ & ĐƯỜNG THẲNG y = a</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-graph-sin" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ phân tích nghiệm động -->
+                <div class="lg:col-span-4 bg-gray-950/50 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xl gap-4">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-900 pb-3">
+                            <h3 class="text-md font-bold text-cyan-400 font-mono">Giải Thích Mô Phỏng</h3>
+                            <p class="text-xs text-gray-400 mt-1">Giao điểm của đường thẳng màu hồng <span class="text-pink-400 font-bold">y = a</span> với trục và đồ thị tương ứng chính là nghiệm.</p>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Điều kiện có nghiệm:</span>
+                                <span class="font-semibold text-emerald-400 font-mono">|a| ≤ 1</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Số điểm biểu diễn trên ĐT:</span>
+                                <span id="points-count-sin" class="font-mono text-cyan-400 font-bold">2 điểm</span>
+                            </div>
+                            <div class="p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20 mt-3 text-xs space-y-1.5">
+                                <span class="block text-[11px] text-gray-400 font-bold text-center border-b border-cyan-500/10 pb-1">CÁC NGHIỆM ĐẠI DIỆN TRONG [-π; π]</span>
+                                <div class="flex justify-between font-mono text-gray-200 pt-1">
+                                    <span>x₁ (Góc α):</span>
+                                    <span id="root1-sin" class="text-cyan-400 font-bold">0.52 rad (30.0°)</span>
+                                </div>
+                                <div class="flex justify-between font-mono text-gray-200">
+                                    <span>x₂ (Góc π - α):</span>
+                                    <span id="root2-sin" class="text-cyan-400 font-bold">2.62 rad (150.0°)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-400 bg-gray-900/80 p-3 rounded-xl border border-gray-800 leading-relaxed">
+                        <span class="font-bold text-gray-300 block mb-1">💡 Kinh nghiệm của Thầy Thọ:</span>
+                        Hãy kéo thanh trượt vượt quá trị tuyệt đối <span class="text-rose-400 font-semibold">1.0</span>. Khi đó, đường thẳng màu hồng không còn cắt đường tròn và đồ thị Sin nữa, minh hoạ cực kỳ sống động trường hợp **Vô nghiệm**.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối kiến thức lý thuyết và công thức Phương trình Sin -->
+            <div class="bg-gray-950/40 border border-gray-800 rounded-2xl p-6">
+                <div class="border-b border-gray-900 pb-3 mb-4">
+                    <h3 class="text-md font-bold text-cyan-400 flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                        Lý Thuyết Trọng Tâm: Phương trình Lượng giác sin x = a
+                    </h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 text-xs">
+                    <div class="md:col-span-7 space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-2">
+                            <span class="text-cyan-400 font-bold text-sm block">1. Công thức nghiệm tổng quát</span>
+                            <p class="text-gray-300 leading-relaxed">
+                                Xét phương trình <span class="font-mono text-white font-bold">sin x = a</span>.
+                                <br>&bull; Nếu <span class="text-rose-400 font-bold">|a| > 1</span>: Phương trình vô nghiệm.
+                                <br>&bull; Nếu <span class="text-emerald-400 font-bold">|a| ≤ 1</span>: Gọi <span class="text-white font-bold">α</span> là góc lượng giác thỏa mãn <span class="text-cyan-400 font-bold font-mono">sin α = a</span>. Khi đó ta có công thức nghiệm:
+                            </p>
+                            <div class="bg-gray-950 p-3 rounded-lg border border-gray-800/80 my-2 text-center text-sm font-mono text-white space-y-1.5">
+                                <div class="text-cyan-400 font-bold">Đơn vị Radian:</div>
+                                <div>x = α + k2π, k ∈ ℤ</div>
+                                <div>x = π - α + k2π, k ∈ ℤ</div>
+                                <div class="text-indigo-400 font-bold pt-1 border-t border-gray-900">Đơn vị Độ:</div>
+                                <div>x = β° + k360°, k ∈ ℤ</div>
+                                <div>x = 180° - β° + k360°, k ∈ ℤ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-5 space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-3">
+                            <span class="text-cyan-400 font-bold text-sm block">2. Các trường hợp đặc biệt cần nhớ</span>
+                            <div class="space-y-2 font-mono text-gray-300">
+                                <div class="flex justify-between border-b border-gray-950 pb-1.5">
+                                    <span>sin x = 1 (Cực đại):</span>
+                                    <span class="text-white font-bold">x = π/2 + k2π</span>
+                                </div>
+                                <div class="flex justify-between border-b border-gray-950 pb-1.5">
+                                    <span>sin x = -1 (Cực tiểu):</span>
+                                    <span class="text-white font-bold">x = -π/2 + k2π</span>
+                                </div>
+                                <div class="flex justify-between pb-0.5">
+                                    <span>sin x = 0 (Giao trục):</span>
+                                    <span class="text-white font-bold">x = kπ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-indigo-950/20 p-4 rounded-xl border border-indigo-900/30">
+                            <span class="text-indigo-400 font-bold block mb-1">✍️ Chú ý khi giải toán:</span>
+                            Khi viết công thức nghiệm, học sinh tuyệt đối không được gộp chung hai đơn vị đo radian và độ trong cùng một công thức (Ví dụ không được viết <span class="text-rose-400 font-mono">x = α + k360°</span>).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB PHƯƠNG TRÌNH COS X = A -->
+        <div id="section-cos" class="tab-content hidden flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Mô phỏng trực quan -->
+                <div class="lg:col-span-8 bg-gray-950/50 border border-gray-800 rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-center z-10 border-b border-gray-900 pb-2">
+                        <span class="text-sm font-bold tracking-wide uppercase text-orange-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-orange-400 animate-ping"></span>
+                            Giao điểm đường thẳng x = a & Đồ thị Cos
+                        </span>
+                        <span class="text-xs font-mono bg-orange-500/10 border border-orange-500/20 rounded px-2 py-0.5 text-orange-300">Nghiệm đối xứng nhau qua trục hoành Ox</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐƯỜNG TRÒN LƯỢNG GIÁC (GIAO ĐIỂM x = a)</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-circle-cos" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐỒ THỊ HÀM SỐ & ĐƯỜNG THẲNG y = a</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-graph-cos" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ phân tích nghiệm động -->
+                <div class="lg:col-span-4 bg-gray-950/50 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xl gap-4">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-900 pb-3">
+                            <h3 class="text-md font-bold text-orange-400 font-mono">Giải Thích Mô Phỏng</h3>
+                            <p class="text-xs text-gray-400 mt-1">Giao điểm của đường thẳng đứng <span class="text-pink-400 font-bold">x = a</span> trên đường tròn thể hiện rõ tính đối xứng hoành độ.</p>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Điều kiện có nghiệm:</span>
+                                <span class="font-semibold text-emerald-400 font-mono">|a| ≤ 1</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Số điểm biểu diễn trên ĐT:</span>
+                                <span id="points-count-cos" class="font-mono text-orange-400 font-bold">2 điểm</span>
+                            </div>
+                            <div class="p-3 bg-orange-500/10 rounded-xl border border-orange-500/20 mt-3 text-xs space-y-1.5">
+                                <span class="block text-[11px] text-gray-400 font-bold text-center border-b border-orange-500/10 pb-1">CÁC NGHIỆM ĐẠI DIỆN TRONG [-π; π]</span>
+                                <div class="flex justify-between font-mono text-gray-200 pt-1">
+                                    <span>x₁ (Góc α):</span>
+                                    <span id="root1-cos" class="text-orange-400 font-bold">1.05 rad (60.0°)</span>
+                                </div>
+                                <div class="flex justify-between font-mono text-gray-200">
+                                    <span>x₂ (Góc -α):</span>
+                                    <span id="root2-cos" class="text-orange-400 font-bold">-1.05 rad (-60.0°)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-400 bg-gray-900/80 p-3 rounded-xl border border-gray-800 leading-relaxed">
+                        <span class="font-bold text-gray-300 block mb-1">💡 Nhận xét của Thầy Thọ:</span>
+                        Do tính đối xứng qua trục hoành Ox, phương trình Cos luôn cho nghiệm đối nhau <span class="text-orange-400 font-mono">±α</span>. Thể hiện trên đồ thị bằng các điểm đối xứng qua gốc tọa độ O khi kết hợp với tính tuần hoàn.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối kiến thức lý thuyết và công thức Phương trình Cos -->
+            <div class="bg-gray-950/40 border border-gray-800 rounded-2xl p-6">
+                <div class="border-b border-gray-900 pb-3 mb-4">
+                    <h3 class="text-md font-bold text-orange-400 flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                        Lý Thuyết Trọng Tâm: Phương trình Lượng giác cos x = a
+                    </h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 text-xs">
+                    <div class="md:col-span-7 space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-2">
+                            <span class="text-orange-400 font-bold text-sm block">1. Công thức nghiệm tổng quát</span>
+                            <p class="text-gray-300 leading-relaxed">
+                                Xét phương trình <span class="font-mono text-white font-bold">cos x = a</span>.
+                                <br>&bull; Nếu <span class="text-rose-400 font-bold">|a| > 1</span>: Phương trình vô nghiệm.
+                                <br>&bull; Nếu <span class="text-emerald-400 font-bold">|a| ≤ 1</span>: Gọi <span class="text-white font-bold">α</span> là góc lượng giác thỏa mãn <span class="text-orange-400 font-bold font-mono">cos α = a</span>. Khi đó ta có công thức nghiệm:
+                            </p>
+                            <div class="bg-gray-950 p-3 rounded-lg border border-gray-800/80 my-2 text-center text-sm font-mono text-white space-y-1.5">
+                                <div class="text-orange-400 font-bold">Đơn vị Radian:</div>
+                                <div class="text-lg font-bold">x = ±α + k2π, k ∈ ℤ</div>
+                                <div class="text-indigo-400 font-bold pt-1 border-t border-gray-900">Đơn vị Độ:</div>
+                                <div class="text-lg font-bold">x = ±β° + k360°, k ∈ ℤ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-5 space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-3">
+                            <span class="text-orange-400 font-bold text-sm block">2. Các trường hợp đặc biệt cần nhớ</span>
+                            <div class="space-y-2 font-mono text-gray-300">
+                                <div class="flex justify-between border-b border-gray-950 pb-1.5">
+                                    <span>cos x = 1 (Mút bên phải):</span>
+                                    <span class="text-white font-bold">x = k2π</span>
+                                </div>
+                                <div class="flex justify-between border-b border-gray-950 pb-1.5">
+                                    <span>cos x = -1 (Mút bên trái):</span>
+                                    <span class="text-white font-bold">x = π + k2π</span>
+                                </div>
+                                <div class="flex justify-between pb-0.5">
+                                    <span>cos x = 0 (Giao trục):</span>
+                                    <span class="text-white font-bold">x = π/2 + kπ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-indigo-950/20 p-4 rounded-xl border border-indigo-900/30">
+                            <span class="text-indigo-400 font-bold block mb-1">✍️ Mẹo nhớ nhanh:</span>
+                            Vì Cos là hàm chẵn, hai góc lượng giác đối nhau <span class="font-mono">α</span> và <span class="font-mono">-α</span> có cùng giá trị Cos, do đó luôn xuất hiện dấu <span class="text-orange-400 font-bold">±</span> trong nghiệm của phương trình cos x = a.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB PHƯƠNG TRÌNH TAN X = A -->
+        <div id="section-tan" class="tab-content hidden flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Mô phỏng trực quan -->
+                <div class="lg:col-span-8 bg-gray-950/50 border border-gray-800 rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-center z-10 border-b border-gray-900 pb-2">
+                        <span class="text-sm font-bold tracking-wide uppercase text-emerald-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+                            Giao điểm đường thẳng y = a & Đồ thị Tan
+                        </span>
+                        <span class="text-xs font-mono bg-emerald-500/10 border border-emerald-500/20 rounded px-2 py-0.5 text-emerald-300">Nghiệm lặp lại sau mỗi chu kỳ π</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐƯỜNG TRÒN LƯỢNG GIÁC (TIẾP TUYẾN x = 1)</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-circle-tan" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐỒ THỊ HÀM SỐ & ĐƯỜNG THẲNG y = a</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-graph-tan" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ phân tích nghiệm động -->
+                <div class="lg:col-span-4 bg-gray-950/50 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xl gap-4">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-900 pb-3">
+                            <h3 class="text-md font-bold text-emerald-400 font-mono">Giải Thích Mô Phỏng</h3>
+                            <p class="text-xs text-gray-400 mt-1">Đường thẳng nối từ gốc O, đi qua điểm biểu diễn trên đường tròn và cắt trục tiếp tuyến tại độ cao <span class="text-pink-400 font-bold">a</span>.</p>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Điều kiện có nghiệm:</span>
+                                <span class="font-semibold text-emerald-400 font-mono">Luôn có nghiệm với mọi a</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Số điểm biểu diễn trên ĐT:</span>
+                                <span class="font-mono text-emerald-400 font-bold">2 điểm (Đối đỉnh)</span>
+                            </div>
+                            <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 mt-3 text-xs space-y-1.5">
+                                <span class="block text-[11px] text-gray-400 font-bold text-center border-b border-emerald-500/10 pb-1">CÁC NGHIỆM ĐẠI DIỆN TRONG [-π; π]</span>
+                                <div class="flex justify-between font-mono text-gray-200 pt-1">
+                                    <span>x₁ (Góc α):</span>
+                                    <span id="root1-tan" class="text-emerald-400 font-bold">0.46 rad (26.6°)</span>
+                                </div>
+                                <div class="flex justify-between font-mono text-gray-200">
+                                    <span>x₂ (Góc α + π):</span>
+                                    <span id="root2-tan" class="text-emerald-400 font-bold">-2.68 rad (-153.4°)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-400 bg-gray-900/80 p-3 rounded-xl border border-gray-800 leading-relaxed">
+                        <span class="font-bold text-gray-300 block mb-1">💡 Lưu ý từ Thầy Thọ:</span>
+                        Vì giá trị của hàm số Tan có thể tiến ra vô hạn nên phương trình <span class="text-emerald-400 font-mono">tan x = a</span> luôn luôn có nghiệm với bất kỳ số thực <span class="text-white">a</span> nào, khác biệt lớn với Sin và Cos!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối kiến thức lý thuyết và công thức Phương trình Tan -->
+            <div class="bg-gray-950/40 border border-gray-800 rounded-2xl p-6">
+                <div class="border-b border-gray-900 pb-3 mb-4">
+                    <h3 class="text-md font-bold text-emerald-400 flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                        Lý Thuyết Trọng Tâm: Phương trình Lượng giác tan x = a
+                    </h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 text-xs">
+                    <div class="md:col-span-7 space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-2">
+                            <span class="text-emerald-400 font-bold text-sm block">1. Công thức nghiệm tổng quát</span>
+                            <p class="text-gray-300 leading-relaxed">
+                                Xét phương trình <span class="font-mono text-white font-bold">tan x = a</span> (Điều kiện xác định: <span class="text-rose-400 font-mono">x ≠ π/2 + kπ</span>).
+                                <br>&bull; Phương trình luôn có nghiệm với mọi số thực <span class="text-white font-bold">a</span>.
+                                <br>&bull; Gọi <span class="text-white font-bold">α</span> là góc lượng giác thỏa mãn <span class="text-emerald-400 font-bold font-mono">tan α = a</span>. Khi đó ta có công thức nghiệm:
+                            </p>
+                            <div class="bg-gray-950 p-3 rounded-lg border border-gray-800/80 my-2 text-center text-sm font-mono text-white space-y-1.5">
+                                <div class="text-emerald-400 font-bold">Đơn vị Radian:</div>
+                                <div class="text-lg font-bold">x = α + kπ, k ∈ ℤ</div>
+                                <div class="text-indigo-400 font-bold pt-1 border-t border-gray-900">Đơn vị Độ:</div>
+                                <div class="text-lg font-bold">x = β° + k180°, k ∈ ℤ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-5 space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-3">
+                            <span class="text-emerald-400 font-bold text-sm block">2. Điều kiện xác định và Lưu ý</span>
+                            <p class="text-gray-300 leading-relaxed">
+                                Hàm số <span class="text-white font-bold">y = tan x</span> không xác định tại các điểm có cos bằng 0, tức là hoành độ giao điểm của bán kính với đường tròn nằm trên trục đứng Oy.
+                                <br>&bull; Biểu diễn trên đường tròn: 2 điểm nghiệm của phương trình đối đỉnh qua tâm O, khoảng cách giữa 2 điểm đúng bằng góc <span class="text-emerald-400 font-bold">π (180°)</span>.
+                            </p>
+                        </div>
+
+                        <div class="bg-indigo-950/20 p-4 rounded-xl border border-indigo-900/30">
+                            <span class="text-indigo-400 font-bold block mb-1">✍️ Cách viết nhanh bằng Kí hiệu:</span>
+                            Nếu góc <span class="font-mono">α</span> không đẹp, học sinh có thể sử dụng kí hiệu hàm ngược: <span class="text-emerald-400 font-mono">x = arctan(a) + kπ, k ∈ ℤ</span>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB PHƯƠNG TRÌNH COT X = A -->
+        <div id="section-cot" class="tab-content hidden flex-col gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Mô phỏng trực quan -->
+                <div class="lg:col-span-8 bg-gray-950/50 border border-gray-800 rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex justify-between items-center z-10 border-b border-gray-900 pb-2">
+                        <span class="text-sm font-bold tracking-wide uppercase text-amber-400 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+                            Giao điểm đường thẳng y = a & Đồ thị Cot
+                        </span>
+                        <span class="text-xs font-mono bg-amber-500/10 border border-emerald-500/20 rounded px-2 py-0.5 text-amber-300">Nghiệm đối đỉnh qua tâm O tương tự Tan</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-center">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐƯỜNG TRÒN LƯỢNG GIÁC (TIẾP TUYẾN y = 1)</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-circle-cot" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs font-bold text-gray-400 mb-2">ĐỒ THỊ HÀM SỐ & ĐƯỜNG THẲNG y = a</span>
+                            <div class="relative w-full aspect-square max-w-[320px] bg-gray-900/40 rounded-xl border border-gray-800/50 p-2">
+                                <canvas id="canvas-graph-cot" class="w-full h-full block"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thẻ phân tích nghiệm động -->
+                <div class="lg:col-span-4 bg-gray-950/50 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xl gap-4">
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-900 pb-3">
+                            <h3 class="text-md font-bold text-amber-400 font-mono">Giải Thích Mô Phỏng</h3>
+                            <p class="text-xs text-gray-400 mt-1">Đường thẳng nối từ gốc O cắt đường nằm ngang tiếp tuyến tại điểm có hoành độ đúng bằng tham số <span class="text-pink-400 font-bold">a</span>.</p>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Điều kiện có nghiệm:</span>
+                                <span class="font-semibold text-emerald-400 font-mono">Luôn có nghiệm với mọi a</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-400">Số điểm biểu diễn trên ĐT:</span>
+                                <span class="font-mono text-amber-400 font-bold">2 điểm (Đối đỉnh)</span>
+                            </div>
+                            <div class="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 mt-3 text-xs space-y-1.5">
+                                <span class="block text-[11px] text-gray-400 font-bold text-center border-b border-amber-500/10 pb-1">CÁC NGHIỆM ĐẠI DIỆN TRONG [-π; π]</span>
+                                <div class="flex justify-between font-mono text-gray-200 pt-1">
+                                    <span>x₁ (Góc α):</span>
+                                    <span id="root1-cot" class="text-amber-400 font-bold">1.107 rad (63.4°)</span>
+                                </div>
+                                <div class="flex justify-between font-mono text-gray-200">
+                                    <span>x₂ (Góc α + π):</span>
+                                    <span id="root2-cot" class="text-amber-400 font-bold">-2.03 rad (-116.6°)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-400 bg-gray-900/80 p-3 rounded-xl border border-gray-800 leading-relaxed">
+                        <span class="font-bold text-gray-300 block mb-1">💡 Ghi chú cốt lõi:</span>
+                        Cả Tan và Cot đều là các hàm tuần hoàn với chu kỳ <span class="text-indigo-400">π (180°)</span> nên các nghiệm đại diện của chúng xuất hiện cách đều nhau các đoạn dài bằng đúng <span class="text-amber-400 font-mono">π</span>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khối kiến thức lý thuyết và công thức Phương trình Cot -->
+            <div class="bg-gray-950/40 border border-gray-800 rounded-2xl p-6">
+                <div class="border-b border-gray-900 pb-3 mb-4">
+                    <h3 class="text-md font-bold text-amber-400 flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                        Lý Thuyết Trọng Tâm: Phương trình Lượng giác cot x = a
+                    </h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 text-xs">
+                    <div class="md:col-span-7 space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-2">
+                            <span class="text-amber-400 font-bold text-sm block">1. Công thức nghiệm tổng quát</span>
+                            <p class="text-gray-300 leading-relaxed">
+                                Xét phương trình <span class="font-mono text-white font-bold">cot x = a</span> (Điều kiện xác định: <span class="text-rose-400 font-mono">x ≠ kπ</span>).
+                                <br>&bull; Phương trình luôn có nghiệm với mọi số thực <span class="text-white font-bold">a</span>.
+                                <br>&bull; Gọi <span class="text-white font-bold">α</span> là góc lượng giác thỏa mãn <span class="text-amber-400 font-bold font-mono">cot α = a</span>. Khi đó ta có công thức nghiệm:
+                            </p>
+                            <div class="bg-gray-950 p-3 rounded-lg border border-gray-800/80 my-2 text-center text-sm font-mono text-white space-y-1.5">
+                                <div class="text-amber-400 font-bold">Đơn vị Radian:</div>
+                                <div class="text-lg font-bold">x = α + kπ, k ∈ ℤ</div>
+                                <div class="text-indigo-400 font-bold pt-1 border-t border-gray-900">Đơn vị Độ:</div>
+                                <div class="text-lg font-bold">x = β° + k180°, k ∈ ℤ</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-5 space-y-4">
+                        <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800 space-y-3">
+                            <span class="text-amber-400 font-bold text-sm block">2. Điều kiện xác định và Lưu ý</span>
+                            <p class="text-gray-300 leading-relaxed">
+                                Hàm số <span class="text-white font-bold">y = cot x</span> không xác định tại các điểm có sin bằng 0 (hoành độ đầu mút giao với trục hoành Ox), do đó cần loại trừ điều kiện <span class="text-rose-400 font-mono">x = kπ</span> khi bắt đầu bước biến đổi giải phương trình.
+                            </p>
+                        </div>
+
+                        <div class="bg-indigo-950/20 p-4 rounded-xl border border-indigo-900/30">
+                            <span class="text-indigo-400 font-bold block mb-1">✍️ Cách viết bằng Kí hiệu Hàm Ngược:</span>
+                            Tương tự Tan, đối với những góc xấu, nghiệm của phương trình còn được biểu diễn qua kí hiệu hàm Arccot: <span class="text-amber-400 font-mono">x = arccot(a) + kπ, k ∈ ℤ</span>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-gray-900 bg-gray-950 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+            <div>
+                &copy; 2026 Bản quyền thuộc bài giảng <span class="text-indigo-400 font-bold">Thầy Đoàn Thanh Minh Thọ</span>. Bảo lưu mọi quyền.
+            </div>
+            <div class="flex gap-4">
+                <span class="hover:text-gray-300 transition-colors">Thiết kế EdTech Cao Cấp</span>
+                <span>&bull;</span>
+                <span class="hover:text-gray-300 transition-colors">Công nghệ HTML5 Canvas</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS Logic Core -->
+    <script>
+        // Khởi động các icon Lucide
+        lucide.createIcons();
+
+        // App States
+        let currentTab = 'sin'; // 'sin', 'cos', 'tan', 'cot'
+        let currentA = 0.50; // Parameter a
+        let isPlaying = false;
+        let animationDirection = 1; // 1 for increasing, -1 for decreasing
+        let lastTime = 0;
+
+        // Colors configurations
+        const colors = {
+            sin: { main: '#22d3ee', light: 'rgba(34, 211, 238, 0.15)', glow: 'rgba(34, 211, 238, 0.45)', line: '#ec4899' },
+            cos: { main: '#fb923c', light: 'rgba(251, 146, 60, 0.15)', glow: 'rgba(251, 146, 60, 0.45)', line: '#ec4899' },
+            tan: { main: '#34d399', light: 'rgba(52, 211, 153, 0.15)', glow: 'rgba(52, 211, 153, 0.45)', line: '#ec4899' },
+            cot: { main: '#fbbf24', light: 'rgba(251, 191, 36, 0.15)', glow: 'rgba(251, 191, 36, 0.45)', line: '#ec4899' }
+        };
+
+        // Cache canvas elements and context
+        const canvases = {
+            sin: {
+                circle: document.getElementById('canvas-circle-sin'),
+                graph: document.getElementById('canvas-graph-sin'),
+                ctxCircle: document.getElementById('canvas-circle-sin').getContext('2d'),
+                ctxGraph: document.getElementById('canvas-graph-sin').getContext('2d')
+            },
+            cos: {
+                circle: document.getElementById('canvas-circle-cos'),
+                graph: document.getElementById('canvas-graph-cos'),
+                ctxCircle: document.getElementById('canvas-circle-cos').getContext('2d'),
+                ctxGraph: document.getElementById('canvas-graph-cos').getContext('2d')
+            },
+            tan: {
+                circle: document.getElementById('canvas-circle-tan'),
+                graph: document.getElementById('canvas-graph-tan'),
+                ctxCircle: document.getElementById('canvas-circle-tan').getContext('2d'),
+                ctxGraph: document.getElementById('canvas-graph-tan').getContext('2d')
+            },
+            cot: {
+                circle: document.getElementById('canvas-circle-cot'),
+                graph: document.getElementById('canvas-graph-cot'),
+                ctxCircle: document.getElementById('canvas-circle-cot').getContext('2d'),
+                ctxGraph: document.getElementById('canvas-graph-cot').getContext('2d')
+            }
+        };
+
+        // Scaler for High DPI screen rendering
+        function scaleCanvas(canvas, ctx) {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.resetTransform();
+            ctx.scale(dpr, dpr);
+            return { w: rect.width, h: rect.height };
+        }
+
+        let sizes = {};
+
+        function resizeAll() {
+            const tabs = ['sin', 'cos', 'tan', 'cot'];
+            tabs.forEach(tab => {
+                sizes[tab] = {
+                    circle: scaleCanvas(canvases[tab].circle, canvases[tab].ctxCircle),
+                    graph: scaleCanvas(canvases[tab].graph, canvases[tab].ctxGraph)
+                };
+            });
+        }
+
+        // Setup controller triggers
+        const paramSlider = document.getElementById('param-slider');
+        const paramDisplay = document.getElementById('param-display');
+
+        paramSlider.addEventListener('input', (e) => {
+            currentA = parseFloat(e.target.value);
+            updateLogic();
+        });
+
+        // Initialize viewports
+        window.addEventListener('load', () => {
+            resizeAll();
+            updateLogic();
+            requestAnimationFrame(mainRenderLoop);
+            requestAnimationFrame(animationPhysicsLoop);
+        });
+
+        window.addEventListener('resize', () => {
+            resizeAll();
+        });
+
+        // Loop 1: Render graphics at 60fps
+        function mainRenderLoop() {
+            const active = currentTab;
+            const ctxC = canvases[active].ctxCircle;
+            const ctxG = canvases[active].ctxGraph;
+            const sizeC = sizes[active].circle;
+            const sizeG = sizes[active].graph;
+
+            if (ctxC && ctxG && sizeC && sizeG) {
+                ctxC.clearRect(0, 0, sizeC.w, sizeC.h);
+                ctxG.clearRect(0, 0, sizeG.w, sizeG.h);
+
+                drawTrigCircle(active, ctxC, sizeC.w, sizeC.h);
+                drawFunctionGraph(active, ctxG, sizeG.w, sizeG.h);
+            }
+
+            requestAnimationFrame(mainRenderLoop);
+        }
+
+        // Loop 2: Animate parameter "a" back and forth
+        function animationPhysicsLoop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const delta = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            if (isPlaying) {
+                // Smoothly oscillate a between -1.5 and 1.5
+                currentA += delta * 0.45 * animationDirection;
+                if (currentA > 1.5) {
+                    currentA = 1.5;
+                    animationDirection = -1;
+                } else if (currentA < -1.5) {
+                    currentA = -1.5;
+                    animationDirection = 1;
+                }
+                paramSlider.value = currentA.toFixed(2);
+                updateLogic();
+            }
+
+            requestAnimationFrame(animationPhysicsLoop);
+        }
+
+        // Core mathematics computation and GUI update
+        function updateLogic() {
+            paramDisplay.innerText = `a = ${currentA.toFixed(2)}`;
+
+            // Update solutions badges and texts depending on active tab
+            const badge = document.getElementById('solution-badge');
+            
+            if (currentTab === 'sin' || currentTab === 'cos') {
+                const absA = Math.abs(currentA);
+                if (absA > 1.0) {
+                    badge.innerText = "PHƯƠNG TRÌNH VÔ NGHIỆM";
+                    badge.className = "px-3 py-2 rounded-xl text-xs font-bold text-center border transition-all duration-300 bg-rose-500/10 text-rose-400 border-rose-500/20";
+                    
+                    document.getElementById(`points-count-${currentTab}`).innerText = "0 điểm (Không cắt)";
+                    document.getElementById(`root1-${currentTab}`).innerText = "∅ (Vô nghiệm)";
+                    document.getElementById(`root2-${currentTab}`).innerText = "∅ (Vô nghiệm)";
+                } else if (absA === 1.0 || Math.abs(absA - 1.0) < 0.005) {
+                    badge.innerText = "NGHIỆM ĐẶC BIỆT / KÉP";
+                    badge.className = "px-3 py-2 rounded-xl text-xs font-bold text-center border transition-all duration-300 bg-amber-500/10 text-amber-400 border-amber-500/20";
+                    
+                    document.getElementById(`points-count-${currentTab}`).innerText = "1 điểm (Tiếp xúc)";
+                    if (currentTab === 'sin') {
+                        const rootVal = currentA > 0 ? Math.PI/2 : -Math.PI/2;
+                        const rootDeg = currentA > 0 ? 90.0 : -90.0;
+                        document.getElementById('root1-sin').innerText = `${rootVal.toFixed(2)} rad (${rootDeg.toFixed(1)}°)`;
+                        document.getElementById('root2-sin').innerText = "Trùng với x₁";
+                    } else {
+                        const rootVal = currentA > 0 ? 0 : Math.PI;
+                        const rootDeg = currentA > 0 ? 0.0 : 180.0;
+                        document.getElementById('root1-cos').innerText = `${rootVal.toFixed(2)} rad (${rootDeg.toFixed(1)}°)`;
+                        document.getElementById('root2-cos').innerText = "Trùng với x₁";
+                    }
+                } else {
+                    badge.innerText = "2 HỌ NGHIỆM PHÂN BIỆT";
+                    badge.className = "px-3 py-2 rounded-xl text-xs font-bold text-center border transition-all duration-300 bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                    
+                    document.getElementById(`points-count-${currentTab}`).innerText = "2 điểm phân biệt";
+                    if (currentTab === 'sin') {
+                        const alpha = Math.asin(currentA);
+                        const second = Math.PI - alpha;
+                        const alphaDeg = alpha * 180 / Math.PI;
+                        const secondDeg = second * 180 / Math.PI;
+                        document.getElementById('root1-sin').innerText = `${alpha.toFixed(2)} rad (${alphaDeg.toFixed(1)}°)`;
+                        document.getElementById('root2-sin').innerText = `${second.toFixed(2)} rad (${secondDeg.toFixed(1)}°)`;
+                    } else {
+                        const alpha = Math.acos(currentA);
+                        const second = -alpha;
+                        const alphaDeg = alpha * 180 / Math.PI;
+                        const secondDeg = second * 180 / Math.PI;
+                        document.getElementById('root1-cos').innerText = `${alpha.toFixed(2)} rad (${alphaDeg.toFixed(1)}°)`;
+                        document.getElementById('root2-cos').innerText = `${second.toFixed(2)} rad (${secondDeg.toFixed(1)}°)`;
+                    }
+                }
+            } else if (currentTab === 'tan') {
+                badge.innerText = "LUÔN CÓ NGHIỆM";
+                badge.className = "px-3 py-2 rounded-xl text-xs font-bold text-center border transition-all duration-300 bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                
+                const alpha = Math.atan(currentA);
+                let second = alpha + Math.PI;
+                if (second > Math.PI) second -= 2 * Math.PI; // Normalize to [-pi, pi]
+                
+                const alphaDeg = alpha * 180 / Math.PI;
+                const secondDeg = second * 180 / Math.PI;
+                
+                document.getElementById('root1-tan').innerText = `${alpha.toFixed(2)} rad (${alphaDeg.toFixed(1)}°)`;
+                document.getElementById('root2-tan').innerText = `${second.toFixed(2)} rad (${secondDeg.toFixed(1)}°)`;
+            } else if (currentTab === 'cot') {
+                badge.innerText = "LUÔN CÓ NGHIỆM";
+                badge.className = "px-3 py-2 rounded-xl text-xs font-bold text-center border transition-all duration-300 bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                
+                // arccot(a) = pi/2 - arctan(a)
+                const alpha = Math.PI / 2 - Math.atan(currentA);
+                let second = alpha - Math.PI;
+                if (second < -Math.PI) second += 2 * Math.PI;
+                
+                const alphaDeg = alpha * 180 / Math.PI;
+                const secondDeg = second * 180 / Math.PI;
+                
+                document.getElementById('root1-cot').innerText = `${alpha.toFixed(2)} rad (${alphaDeg.toFixed(1)}°)`;
+                document.getElementById('root2-cot').innerText = `${second.toFixed(2)} rad (${secondDeg.toFixed(1)}°)`;
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tabId) {
+            currentTab = tabId;
+
+            const tabs = ['sin', 'cos', 'tan', 'cot'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const section = document.getElementById(`section-${t}`);
+                if (t === tabId) {
+                    btn.className = `flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 bg-${getTabColor(t)}-500/20 text-${getTabColor(t)}-400 border border-${getTabColor(t)}-500/30`;
+                    section.classList.remove('hidden');
+                    section.classList.add('flex');
+                } else {
+                    btn.className = "flex items-center gap-1.5 px-3.5 py-2 text-xs md:text-sm font-bold rounded-lg transition-all duration-300 text-gray-400 hover:text-white";
+                    section.classList.add('hidden');
+                    section.classList.remove('flex');
+                }
+            });
+
+            setTimeout(resizeAll, 30);
+            updateLogic();
+        }
+
+        function getTabColor(tab) {
+            if (tab === 'sin') return 'cyan';
+            if (tab === 'cos') return 'orange';
+            if (tab === 'tan') return 'emerald';
+            return 'amber';
+        }
+
+        // Play actions
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const playIcon = document.getElementById('play-icon');
+            const playText = document.getElementById('play-text');
+            const playBtn = document.getElementById('btn-play');
+
+            if (isPlaying) {
+                playIcon.setAttribute('data-lucide', 'pause');
+                playText.innerText = "Dừng quét";
+                playBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                playBtn.classList.add('bg-rose-600', 'hover:bg-rose-700');
+            } else {
+                playIcon.setAttribute('data-lucide', 'play');
+                playText.innerText = "Tự động quét a";
+                playBtn.classList.remove('bg-rose-600', 'hover:bg-rose-700');
+                playBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            }
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        //  VẼ ĐƯỜNG TRÒN LƯỢNG GIÁC CHO TỪNG PHƯƠNG TRÌNH
+        // ==========================================
+        function drawTrigCircle(tab, ctx, w, h) {
+            const cx = w / 2;
+            const cy = h / 2;
+            const r = Math.min(w, h) * 0.35;
+
+            // Background Grid Lines
+            ctx.strokeStyle = '#111827';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= w; i += 20) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke();
+            }
+            for (let i = 0; i <= h; i += 20) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
+            }
+
+            // Unit Circle border
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Main Ox & Oy Axes
+            ctx.beginPath();
+            ctx.moveTo(10, cy); ctx.lineTo(w - 10, cy);
+            ctx.moveTo(cx, 10); ctx.lineTo(cx, h - 10);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Coordinate system labels
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 9px monospace';
+            ctx.fillText('x (Cos)', w - 45, cy + 15);
+            ctx.fillText('y (Sin)', cx + 10, 20);
+
+            // NỔI BẬT: Vẽ vạch chia & nhãn cho các giá trị biên -1 và 1 trên Đường tròn Lượng giác
+            const boundaryColor = '#f43f5e'; // Sắc đỏ hồng nổi bật
+            ctx.strokeStyle = boundaryColor;
+            ctx.lineWidth = 2;
+            ctx.fillStyle = boundaryColor;
+            ctx.font = 'bold 11px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Trục Ox: Vạch chia tại 1 và -1
+            // Điểm x = 1 (A)
+            ctx.beginPath(); ctx.moveTo(cx + r, cy - 5); ctx.lineTo(cx + r, cy + 5); ctx.stroke();
+            ctx.fillText('1', cx + r, cy + 16);
+            // Điểm x = -1
+            ctx.beginPath(); ctx.moveTo(cx - r, cy - 5); ctx.lineTo(cx - r, cy + 5); ctx.stroke();
+            ctx.fillText('-1', cx - r, cy + 16);
+
+            // Trục Oy: Vạch chia tại 1 và -1
+            ctx.textAlign = 'right';
+            // Điểm y = 1 (B) - Trong canvas y đi xuống nên y = 1 nằm ở phía trên (cy - r)
+            ctx.beginPath(); ctx.moveTo(cx - 5, cy - r); ctx.lineTo(cx + 5, cy - r); ctx.stroke();
+            ctx.fillText('1', cx - 10, cy - r);
+            // Điểm y = -1
+            ctx.beginPath(); ctx.moveTo(cx - 5, cy + r); ctx.lineTo(cx + 5, cy + r); ctx.stroke();
+            ctx.fillText('-1', cx - 10, cy + r);
+
+            // Reset text alignments
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'alphabetic';
+
+            // Draw line representing "a" and finding intersection points on circle
+            if (tab === 'sin') {
+                // Sin line is y = a. In canvas, coordinate y is inverted.
+                // We draw the line y = cy - currentA * r
+                const targetY = cy - currentA * r;
+                ctx.beginPath();
+                ctx.moveTo(15, targetY);
+                ctx.lineTo(w - 15, targetY);
+                ctx.strokeStyle = colors.sin.line;
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = colors.sin.line;
+                ctx.stroke();
+                ctx.shadowBlur = 0; // reset
+
+                // Draw intersection dots if |a| <= 1
+                if (Math.abs(currentA) <= 1.0) {
+                    const alpha = Math.asin(currentA);
+                    const pts = [
+                        { x: cx + r * Math.cos(alpha), y: cy - r * Math.sin(alpha) },
+                        { x: cx + r * Math.cos(Math.PI - alpha), y: cy - r * Math.sin(Math.PI - alpha) }
+                    ];
+
+                    pts.forEach((pt, index) => {
+                        // Draw vector lines from origin
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy);
+                        ctx.lineTo(pt.x, pt.y);
+                        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+
+                        // Intersection dot
+                        ctx.beginPath();
+                        ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+                        ctx.fillStyle = colors.sin.main;
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 1.5;
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Label angles
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 10px monospace';
+                        ctx.fillText(`x${index + 1}`, pt.x + (pt.x >= cx ? 10 : -20), pt.y + (pt.y >= cy ? 15 : -8));
+                    });
+                }
+            } 
+            else if (tab === 'cos') {
+                // Cos line is x = a. In canvas, targetX = cx + currentA * r
+                const targetX = cx + currentA * r;
+                ctx.beginPath();
+                ctx.moveTo(targetX, 15);
+                ctx.lineTo(targetX, h - 15);
+                ctx.strokeStyle = colors.cos.line;
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = colors.cos.line;
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                // Intersection dots if |a| <= 1
+                if (Math.abs(currentA) <= 1.0) {
+                    const alpha = Math.acos(currentA);
+                    const pts = [
+                        { x: cx + r * Math.cos(alpha), y: cy - r * Math.sin(alpha) },
+                        { x: cx + r * Math.cos(-alpha), y: cy - r * Math.sin(-alpha) }
+                    ];
+
+                    pts.forEach((pt, index) => {
+                        ctx.beginPath();
+                        ctx.moveTo(cx, cy);
+                        ctx.lineTo(pt.x, pt.y);
+                        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+                        ctx.fillStyle = colors.cos.main;
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 1.5;
+                        ctx.fill();
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 10px monospace';
+                        ctx.fillText(`x${index + 1}`, pt.x + (pt.x >= cx ? 10 : -20), pt.y + (pt.y >= cy ? 12 : -8));
+                    });
+                }
+            } 
+            else if (tab === 'tan') {
+                // Tangent auxiliary axis at x = cx + r
+                ctx.beginPath();
+                ctx.moveTo(cx + r, 10);
+                ctx.lineTo(cx + r, h - 10);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Point on tangent axis: y = cy - currentA * r
+                const targetY = cy - currentA * r;
+
+                // Draw pink dot at target height on tangent axis
+                ctx.beginPath();
+                ctx.arc(cx + r, targetY, 4, 0, Math.PI * 2);
+                ctx.fillStyle = colors.tan.line;
+                ctx.fill();
+
+                // Draw line from O to the target height on tangent axis
+                ctx.beginPath();
+                ctx.moveTo(cx - (cx + r - cx), cy - (targetY - cy)); // extended backward
+                ctx.lineTo(cx + r, targetY);
+                ctx.strokeStyle = colors.tan.line;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Find intersection of this line with the unit circle
+                const alpha = Math.atan(currentA);
+                const pts = [
+                    { x: cx + r * Math.cos(alpha), y: cy - r * Math.sin(alpha) },
+                    { x: cx + r * Math.cos(alpha + Math.PI), y: cy - r * Math.sin(alpha + Math.PI) }
+                ];
+
+                pts.forEach((pt, index) => {
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+                    ctx.fillStyle = colors.tan.main;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 1.5;
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 10px monospace';
+                    ctx.fillText(`x${index + 1}`, pt.x + (pt.x >= cx ? 10 : -20), pt.y + (pt.y >= cy ? 12 : -8));
+                });
+            } 
+            else if (tab === 'cot') {
+                // Cotangent auxiliary axis at y = cy - r
+                ctx.beginPath();
+                ctx.moveTo(10, cy - r);
+                ctx.lineTo(w - 10, cy - r);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Point on cotangent axis: x = cx + currentA * r
+                const targetX = cx + currentA * r;
+
+                // Draw pink dot on cotangent scale
+                ctx.beginPath();
+                ctx.arc(targetX, cy - r, 4, 0, Math.PI * 2);
+                ctx.fillStyle = colors.cot.line;
+                ctx.fill();
+
+                // Draw line through O
+                ctx.beginPath();
+                ctx.moveTo(cx - (targetX - cx), cy - (cy - r - cy)); // extended backward
+                ctx.lineTo(targetX, cy - r);
+                ctx.strokeStyle = colors.cot.line;
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Find intersection points
+                const alpha = Math.PI / 2 - Math.atan(currentA);
+                const pts = [
+                    { x: cx + r * Math.cos(alpha), y: cy - r * Math.sin(alpha) },
+                    { x: cx + r * Math.cos(alpha + Math.PI), y: cy - r * Math.sin(alpha + Math.PI) }
+                ];
+
+                pts.forEach((pt, index) => {
+                    ctx.beginPath();
+                    ctx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+                    ctx.fillStyle = colors.cot.main;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 1.5;
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 10px monospace';
+                    ctx.fillText(`x${index + 1}`, pt.x + (pt.x >= cx ? 10 : -20), pt.y + (pt.y >= cy ? 12 : -8));
+                });
+            }
+        }
+
+        // ==========================================
+        //  VẼ ĐỒ THỊ LƯỢNG GIÁC CHO TỪNG PHƯƠNG TRÌNH
+        // ==========================================
+        function drawFunctionGraph(tab, ctx, w, h) {
+            const cx = w / 2;
+            const cy = h / 2;
+
+            const scaleX = w / (4 * Math.PI); // maps radian to X axis
+            const scaleY = h * 0.3; // scale amplitude
+
+            // Grid lines
+            ctx.strokeStyle = '#111827';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= w; i += 20) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke();
+            }
+            for (let i = 0; i <= h; i += 20) {
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
+            }
+
+            // Axes
+            ctx.beginPath();
+            ctx.moveTo(10, cy); ctx.lineTo(w - 10, cy);
+            ctx.moveTo(cx, 10); ctx.lineTo(cx, h - 10);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+
+            // Label X scales: -2pi to 2pi
+            const labelXPoints = [
+                { val: -Math.PI * 2, label: '-2π' },
+                { val: -Math.PI, label: '-π' },
+                { val: -Math.PI / 2, label: '-π/2' },
+                { val: 0, label: '0' },
+                { val: Math.PI / 2, label: 'π/2' },
+                { val: Math.PI, label: 'π' },
+                { val: Math.PI * 2, label: '2π' }
+            ];
+
+            ctx.fillStyle = '#475569';
+            ctx.font = 'bold 9px monospace';
+            ctx.textAlign = 'center';
+            labelXPoints.forEach(pt => {
+                const drawX = cx + pt.val * scaleX;
+                if (pt.val !== 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(drawX, cy - 3);
+                    ctx.lineTo(drawX, cy + 3);
+                    ctx.strokeStyle = '#334155';
+                    ctx.stroke();
+                }
+                ctx.fillText(pt.label, drawX, cy + 14);
+            });
+
+            // Asymptotes for tan/cot
+            if (tab === 'tan') {
+                const asymptotes = [-1.5 * Math.PI, -0.5 * Math.PI, 0.5 * Math.PI, 1.5 * Math.PI];
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.25)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                asymptotes.forEach(asymp => {
+                    const drawX = cx + asymp * scaleX;
+                    ctx.beginPath(); ctx.moveTo(drawX, 10); ctx.lineTo(drawX, h - 10); ctx.stroke();
+                });
+                ctx.setLineDash([]);
+            } else if (tab === 'cot') {
+                const asymptotes = [-2*Math.PI, -Math.PI, Math.PI, 2*Math.PI];
+                ctx.strokeStyle = 'rgba(239, 68, 68, 0.25)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                asymptotes.forEach(asymp => {
+                    const drawX = cx + asymp * scaleX;
+                    ctx.beginPath(); ctx.moveTo(drawX, 10); ctx.lineTo(drawX, h - 10); ctx.stroke();
+                });
+                ctx.setLineDash([]);
+            }
+
+            // NỔI BẬT: Vẽ 2 đường biên ngang y = 1 và y = -1 dạng nét đứt màu hồng neon
+            const boundaryColor = '#f43f5e';
+            ctx.strokeStyle = 'rgba(244, 63, 94, 0.25)'; // Hồng mờ hỗ trợ căn dòng
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([4, 4]);
+
+            // Guideline tại y = 1
+            ctx.beginPath();
+            ctx.moveTo(10, cy - scaleY);
+            ctx.lineTo(w - 10, cy - scaleY);
+            ctx.stroke();
+
+            // Guideline tại y = -1
+            ctx.beginPath();
+            ctx.moveTo(10, cy + scaleY);
+            ctx.lineTo(w - 10, cy + scaleY);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset nét đứt
+
+            // NỔI BẬT: Chia vạch và nhãn đậm màu hồng biên cho giá trị Y = 1 và Y = -1 trên đồ thị
+            const highlightY = [1, -1];
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = boundaryColor;
+            ctx.font = 'bold 11px monospace';
+
+            highlightY.forEach(val => {
+                const drawY = cy - val * scaleY;
+                // Vạch tick
+                ctx.beginPath();
+                ctx.moveTo(cx - 5, drawY);
+                ctx.lineTo(cx + 5, drawY);
+                ctx.strokeStyle = boundaryColor;
+                ctx.lineWidth = 1.8;
+                ctx.stroke();
+                // Chữ số
+                ctx.fillText(val > 0 ? '+1' : '-1', cx - 8, drawY);
+            });
+
+            // Reset text alignments
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+
+            // Draw Curve of active function
+            ctx.beginPath();
+            let firstPoint = true;
+            const startX = -2 * Math.PI;
+            const endX = 2 * Math.PI;
+            const step = 0.05;
+
+            ctx.strokeStyle = colors[tab].main;
+            ctx.lineWidth = 2.5;
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = colors[tab].glow;
+
+            for (let x = startX; x <= endX; x += step) {
+                let y = 0;
+                let isValid = true;
+
+                if (tab === 'sin') {
+                    y = Math.sin(x);
+                } else if (tab === 'cos') {
+                    y = Math.cos(x);
+                } else if (tab === 'tan') {
+                    y = Math.tan(x);
+                    if (Math.abs(Math.cos(x)) < 0.08) isValid = false;
+                } else if (tab === 'cot') {
+                    y = 1 / Math.tan(x);
+                    if (Math.abs(Math.sin(x)) < 0.08) isValid = false;
+                }
+
+                const drawX = cx + x * scaleX;
+                const drawY = cy - y * scaleY;
+
+                if (isValid && drawY >= 5 && drawY <= h - 5) {
+                    if (firstPoint) {
+                        ctx.moveTo(drawX, drawY);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(drawX, drawY);
+                    }
+                } else {
+                    firstPoint = true;
+                }
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Draw Horizontal neon intersection line y = a
+            const targetLineY = cy - currentA * scaleY;
+            ctx.beginPath();
+            ctx.moveTo(15, targetLineY);
+            ctx.lineTo(w - 15, targetLineY);
+            ctx.strokeStyle = colors[tab].line;
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = colors[tab].line;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Find all intersection points inside the domain [-2pi, 2pi] and render dots
+            const intersections = [];
+
+            if (tab === 'sin' && Math.abs(currentA) <= 1.0) {
+                const base = Math.asin(currentA);
+                // standard sin periodic roots: alpha + k2pi, (pi - alpha) + k2pi
+                const periods = [-2, -1, 0, 1, 2];
+                periods.forEach(k => {
+                    const r1 = base + k * 2 * Math.PI;
+                    const r2 = Math.PI - base + k * 2 * Math.PI;
+                    if (r1 >= -2 * Math.PI && r1 <= 2 * Math.PI) intersections.push(r1);
+                    if (r2 >= -2 * Math.PI && r2 <= 2 * Math.PI) intersections.push(r2);
+                });
+            } 
+            else if (tab === 'cos' && Math.abs(currentA) <= 1.0) {
+                const base = Math.acos(currentA);
+                const periods = [-2, -1, 0, 1, 2];
+                periods.forEach(k => {
+                    const r1 = base + k * 2 * Math.PI;
+                    const r2 = -base + k * 2 * Math.PI;
+                    if (r1 >= -2 * Math.PI && r1 <= 2 * Math.PI) intersections.push(r1);
+                    if (r2 >= -2 * Math.PI && r2 <= 2 * Math.PI) intersections.push(r2);
+                });
+            } 
+            else if (tab === 'tan') {
+                const base = Math.atan(currentA);
+                const periods = [-2, -1, 0, 1, 2, 3];
+                periods.forEach(k => {
+                    const r1 = base + k * Math.PI;
+                    if (r1 >= -2 * Math.PI && r1 <= 2 * Math.PI) intersections.push(r1);
+                });
+            } 
+            else if (tab === 'cot') {
+                const base = Math.PI / 2 - Math.atan(currentA);
+                const periods = [-3, -2, -1, 0, 1, 2];
+                periods.forEach(k => {
+                    const r1 = base + k * Math.PI;
+                    if (r1 >= -2 * Math.PI && r1 <= 2 * Math.PI) intersections.push(r1);
+                });
+            }
+
+            // Draw intersection dots and drop lines to X axis
+            intersections.forEach(root => {
+                const drawX = cx + root * scaleX;
+                const drawY = targetLineY;
+
+                // Vertical projection to X-axis
+                ctx.beginPath();
+                ctx.moveTo(drawX, drawY);
+                ctx.lineTo(drawX, cy);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Plotting dot
+                ctx.beginPath();
+                ctx.arc(drawX, drawY, 5, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = colors[tab].main;
+                ctx.lineWidth = 1.5;
+                ctx.fill();
+                ctx.stroke();
+            });
+        }
+    </script>
+</body>
+</html>
